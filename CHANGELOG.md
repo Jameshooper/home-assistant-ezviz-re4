@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- Add an original repository-local brand icon for HACS.
+- Sort manifest keys according to Home Assistant validation requirements.
+
 ## 0.5.0
 
 - Add base-station status sensors for mop washing, mop drying, dust collection,

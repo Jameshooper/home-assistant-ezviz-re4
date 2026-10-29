@@ -10,11 +10,11 @@ from typing import Any
 import zlib
 
 
-class EzvizRs20ProApiError(Exception):
+class EzvizRe4ProApiError(Exception):
     """Raised when the RE4 endpoint rejects a request."""
 
 
-class EzvizRs20ProApi:
+class EzvizRe4ProApi:
     """Use the official integration's session without copying credentials."""
 
     def __init__(self, client: Any) -> None:
@@ -141,10 +141,10 @@ class EzvizRs20ProApi:
         session = getattr(self._client, "_session", None)
         token = getattr(self._client, "_token", None)
         if session is None or not isinstance(token, dict):
-            raise EzvizRs20ProApiError("Aktywna sesja EZVIZ jest niedostępna")
+            raise EzvizRe4ProApiError("Aktywna sesja EZVIZ jest niedostępna")
         api_url = token.get("api_url")
         if not api_url:
-            raise EzvizRs20ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
+            raise EzvizRe4ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
 
         routes = (
             "/v3/specialBizs/sweeprobot/v3/rule/path",
@@ -219,10 +219,10 @@ class EzvizRs20ProApi:
         session = getattr(self._client, "_session", None)
         token = getattr(self._client, "_token", None)
         if session is None or not isinstance(token, dict):
-            raise EzvizRs20ProApiError("Aktywna sesja EZVIZ jest niedostępna")
+            raise EzvizRe4ProApiError("Aktywna sesja EZVIZ jest niedostępna")
         api_url = token.get("api_url")
         if not api_url:
-            raise EzvizRs20ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
+            raise EzvizRe4ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
 
         url = (
             f"https://{api_url}/v3/iot-feature/{endpoint}/"
@@ -239,11 +239,11 @@ class EzvizRs20ProApi:
         response.raise_for_status()
         result = response.json()
         if not isinstance(result, dict):
-            raise EzvizRs20ProApiError("EZVIZ zwrócił nieprawidłową odpowiedź")
+            raise EzvizRe4ProApiError("EZVIZ zwrócił nieprawidłową odpowiedź")
 
         meta = result.get("meta")
         code = meta.get("code") if isinstance(meta, dict) else result.get("code")
         if code not in (None, 0, 200, "0", "200"):
             message = meta.get("message") if isinstance(meta, dict) else result.get("msg")
-            raise EzvizRs20ProApiError(f"EZVIZ odrzucił żądanie {code}: {message}")
+            raise EzvizRe4ProApiError(f"EZVIZ odrzucił żądanie {code}: {message}")
         return result

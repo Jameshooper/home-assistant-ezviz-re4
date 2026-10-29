@@ -19,19 +19,19 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import EzvizRs20ProCoordinator
+from .coordinator import EzvizRe4ProCoordinator
 
 
 @dataclass(frozen=True, kw_only=True)
-class Rs20SensorDescription(SensorEntityDescription):
-    """Describe a value in the RS20 response."""
+class Re4SensorDescription(SensorEntityDescription):
+    """Describe a value in the RE4 response."""
 
     source_key: str
     remaining_percent: bool = False
 
 
 SENSORS: Final = (
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="battery",
         translation_key="battery",
         source_key="SurplusPower",
@@ -39,7 +39,7 @@ SENSORS: Final = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="total_clean_area",
         translation_key="total_clean_area",
         source_key="totalCleanArea",
@@ -47,7 +47,7 @@ SENSORS: Final = (
         state_class=SensorStateClass.TOTAL_INCREASING,
         icon="mdi:texture-box",
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="main_brush",
         translation_key="main_brush",
         source_key="RotatingBrushWorkingTime",
@@ -56,7 +56,7 @@ SENSORS: Final = (
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:brush",
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="side_brush",
         translation_key="side_brush",
         source_key="EdgeBrushWorkingTime",
@@ -65,7 +65,7 @@ SENSORS: Final = (
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:brush-outline",
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="hepa_filter",
         translation_key="hepa_filter",
         source_key="HepaWorkingTime",
@@ -74,7 +74,7 @@ SENSORS: Final = (
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:air-filter",
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="mop",
         translation_key="mop",
         source_key="MopWorkingTime",
@@ -83,7 +83,7 @@ SENSORS: Final = (
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:water",
     ),
-    Rs20SensorDescription(
+    Re4SensorDescription(
         key="sensors",
         translation_key="sensors",
         source_key="SensorWorkingTime",
@@ -133,25 +133,25 @@ def _find_scalar(value: Any, key: str) -> Any | None:
 
 async def async_setup_entry(
     hass: Any,
-    entry: ConfigEntry[EzvizRs20ProCoordinator],
+    entry: ConfigEntry[EzvizRe4ProCoordinator],
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up RE4 sensors."""
     async_add_entities(
-        Rs20Sensor(entry.runtime_data, description) for description in SENSORS
+        Re4Sensor(entry.runtime_data, description) for description in SENSORS
     )
 
 
-class Rs20Sensor(CoordinatorEntity[EzvizRs20ProCoordinator], SensorEntity):
-    """A sensor sourced from the RS20 feature report."""
+class Re4Sensor(CoordinatorEntity[EzvizRe4ProCoordinator], SensorEntity):
+    """A sensor sourced from the RE4 feature report."""
 
     _attr_has_entity_name = True
-    entity_description: Rs20SensorDescription
+    entity_description: Re4SensorDescription
 
     def __init__(
         self,
-        coordinator: EzvizRs20ProCoordinator,
-        description: Rs20SensorDescription,
+        coordinator: EzvizRe4ProCoordinator,
+        description: Re4SensorDescription,
     ) -> None:
         super().__init__(coordinator)
         self.entity_description = description

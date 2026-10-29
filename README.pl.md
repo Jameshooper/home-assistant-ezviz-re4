@@ -44,7 +44,7 @@ kopię loginu ani hasła EZVIZ i ich nie zapisuje.
 ## Instalacja ręczna
 
 1. Pobierz kod źródłowy najnowszego wydania z GitHuba.
-2. Skopiuj katalog `custom_components/ezviz_rs20pro` do
+2. Skopiuj katalog `custom_components/ezviz_re4` do
    `/config/custom_components/` w Home Assistant.
 3. Uruchom HA ponownie i dodaj integrację **EZVIZ RE4** z interfejsu.
 

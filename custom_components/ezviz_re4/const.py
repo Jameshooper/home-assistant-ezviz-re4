@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-DOMAIN = "ezviz_rs20pro"
+DOMAIN = "ezviz_re4"
 SOURCE_DOMAIN = "ezviz"
 
 CONF_SOURCE_ENTRY_ID = "source_entry_id"

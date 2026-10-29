@@ -43,7 +43,7 @@ It does not ask for or store another copy of your EZVIZ username or password.
 ## Manual installation
 
 1. Download the source archive from the latest GitHub release.
-2. Copy `custom_components/ezviz_rs20pro` into Home Assistant's
+2. Copy `custom_components/ezviz_re4` into Home Assistant's
    `/config/custom_components/` directory.
 3. Restart Home Assistant and add **EZVIZ RE4** from the integration UI.
 

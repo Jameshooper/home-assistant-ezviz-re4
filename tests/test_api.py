@@ -1,4 +1,4 @@
-"""Unit tests for the RS20 Pro request adapter."""
+"""Unit tests for the RE4 request adapter."""
 
 from __future__ import annotations
 
@@ -13,14 +13,14 @@ import unittest
 API_PATH = (
     Path(__file__).parents[1]
     / "custom_components"
-    / "ezviz_rs20pro"
+    / "ezviz_re4"
     / "api.py"
 )
-SPEC = importlib.util.spec_from_file_location("ezviz_rs20pro_api", API_PATH)
+SPEC = importlib.util.spec_from_file_location("ezviz_re4_api", API_PATH)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
-EzvizRs20ProApi = MODULE.EzvizRs20ProApi
+EzvizRe4ProApi = MODULE.EzvizRe4ProApi
 
 
 class FakeResponse:
@@ -68,7 +68,7 @@ class ApiTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.client = FakeClient()
-        self.api = EzvizRs20ProApi(self.client)
+        self.api = EzvizRe4ProApi(self.client)
 
     def test_query_current_task(self) -> None:
         self.api.query_current_task("ab1234567")

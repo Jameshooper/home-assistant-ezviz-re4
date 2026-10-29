@@ -1,5 +1,5 @@
 {
-  "domain": "ezviz_rs20pro",
+  "domain": "ezviz_re4",
   "name": "EZVIZ RE4",
   "after_dependencies": ["ezviz"],
   "codeowners": ["@Jameshooper"],

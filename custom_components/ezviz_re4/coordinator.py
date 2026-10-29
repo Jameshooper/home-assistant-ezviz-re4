@@ -15,7 +15,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .api import EzvizRs20ProApi
+from .api import EzvizRe4ProApi
 from .cloud_camera import capture_cloud_snapshot, trace_cloud_stream
 from .const import (
     CONF_SERIAL,
@@ -56,7 +56,7 @@ def _is_sweeping_robot(value: Any) -> bool:
     return False
 
 
-class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Fetch RE4 data through the already authenticated EZVIZ client."""
 
     def __init__(
@@ -74,7 +74,7 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entry = entry
         self.source_entry = source_entry
         self.serial: str = entry.data.get(CONF_SERIAL, "")
-        self.rs20_api: EzvizRs20ProApi | None = None
+        self.re4_api: EzvizRe4ProApi | None = None
         self.camera_snapshot: bytes | None = None
         self.camera_snapshot_updated: datetime | None = None
 
@@ -114,12 +114,12 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             selected_serial, selected = matches[0]
             self.serial = selected_serial
 
-        self.rs20_api = EzvizRs20ProApi(source_api)
+        self.re4_api = EzvizRe4ProApi(source_api)
         task: dict[str, Any] = {}
         task_error: str | None = None
         try:
             task = await self.hass.async_add_executor_job(
-                self.rs20_api.query_current_task,
+                self.re4_api.query_current_task,
                 selected_serial,
             )
         except Exception as err:
@@ -134,10 +134,10 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_clean_control(self, command: str) -> None:
         """Send a documented robot control and refresh state."""
-        if self.rs20_api is None:
+        if self.re4_api is None:
             raise UpdateFailed("Klient RE4 nie jest gotowy")
         await self.hass.async_add_executor_job(
-            self.rs20_api.clean_control,
+            self.re4_api.clean_control,
             self.serial,
             command,
         )
@@ -145,10 +145,10 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_set_clean_mode(self, mode: str) -> None:
         """Set cleaning mode and refresh state."""
-        if self.rs20_api is None:
+        if self.re4_api is None:
             raise UpdateFailed("Klient RE4 nie jest gotowy")
         await self.hass.async_add_executor_job(
-            self.rs20_api.set_clean_mode,
+            self.re4_api.set_clean_mode,
             self.serial,
             mode,
         )
@@ -162,11 +162,11 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         value: dict[str, Any],
     ) -> None:
         """Update an allow-listed station setting and refresh device state."""
-        if self.rs20_api is None:
+        if self.re4_api is None:
             raise UpdateFailed("RE4 client is not ready")
         await self.hass.async_add_executor_job(
             partial(
-                self.rs20_api.set_station_feature,
+                self.re4_api.set_station_feature,
                 self.serial,
                 domain=domain,
                 identifier=identifier,
@@ -177,7 +177,7 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_clean_segments(self, segment_ids: list[str]) -> None:
         """Start a native room-cleaning task for selected segment IDs."""
-        if self.rs20_api is None:
+        if self.re4_api is None:
             raise UpdateFailed("Klient RE4 nie jest gotowy")
         device = self.data.get("device", {})
         try:
@@ -199,7 +199,7 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             room["order"] = order
         await self.hass.async_add_executor_job(
             partial(
-                self.rs20_api.start_region_clean,
+                self.re4_api.start_region_clean,
                 self.serial,
                 map_id=map_id,
                 rooms=rooms,

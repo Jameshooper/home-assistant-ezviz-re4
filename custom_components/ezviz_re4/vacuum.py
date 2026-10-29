@@ -17,7 +17,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import EzvizRs20ProCoordinator
+from .coordinator import EzvizRe4ProCoordinator
 
 _ERROR_TRANSLATIONS = {
     "CR_CleanWaterBoxLow": "Mało wody w zbiorniku czystej wody",
@@ -51,14 +51,14 @@ def _find_value(value: Any, keys: tuple[str, ...]) -> Any | None:
 
 async def async_setup_entry(
     hass: Any,
-    entry: ConfigEntry[EzvizRs20ProCoordinator],
+    entry: ConfigEntry[EzvizRe4ProCoordinator],
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the RE4 vacuum entity."""
-    async_add_entities([EzvizRs20ProVacuum(entry.runtime_data)])
+    async_add_entities([EzvizRe4ProVacuum(entry.runtime_data)])
 
 
-class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuumEntity):
+class EzvizRe4ProVacuum(CoordinatorEntity[EzvizRe4ProCoordinator], StateVacuumEntity):
     """EZVIZ RE4 vacuum entity."""
 
     _attr_has_entity_name = True
@@ -72,7 +72,7 @@ class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuum
         | VacuumEntityFeature.CLEAN_AREA
     )
 
-    def __init__(self, coordinator: EzvizRs20ProCoordinator) -> None:
+    def __init__(self, coordinator: EzvizRe4ProCoordinator) -> None:
         super().__init__(coordinator)
         serial = coordinator.data["serial"]
         self._attr_unique_id = f"{serial}_vacuum"

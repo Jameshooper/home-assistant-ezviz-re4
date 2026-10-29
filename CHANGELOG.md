@@ -6,8 +6,9 @@
 - Remove the dock-only sensors, base-station switches and camera snapshot
   entity, which the RE4 does not report.
 - Discover the robot by its `SweepingRobot` category instead of the RS20 model.
-- Rename the user-facing integration to "EZVIZ RE4". The internal domain stays
-  `ezviz_rs20pro` so existing config entries keep working.
+- Rename the integration domain to `ezviz_re4` and the folder to
+  `custom_components/ezviz_re4`. Remove the old "EZVIZ RS20 Pro" entry and add
+  "EZVIZ RE4" again after updating.
 
 ## 0.5.1
 

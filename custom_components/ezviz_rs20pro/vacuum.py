@@ -1,4 +1,4 @@
-"""Vacuum platform for EZVIZ RS20 Pro."""
+"""Vacuum platform for EZVIZ RE4."""
 
 from __future__ import annotations
 
@@ -54,12 +54,12 @@ async def async_setup_entry(
     entry: ConfigEntry[EzvizRs20ProCoordinator],
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the RS20 Pro vacuum entity."""
+    """Set up the RE4 vacuum entity."""
     async_add_entities([EzvizRs20ProVacuum(entry.runtime_data)])
 
 
 class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuumEntity):
-    """EZVIZ RS20 Pro vacuum entity."""
+    """EZVIZ RE4 vacuum entity."""
 
     _attr_has_entity_name = True
     _attr_name = None
@@ -79,8 +79,8 @@ class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuum
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial)},
             manufacturer="EZVIZ",
-            model="RS20 Pro",
-            name="EZVIZ RS20 Pro",
+            model="RE4",
+            name="EZVIZ RE4",
             sw_version=str(
                 _find_value(coordinator.data["device"], ("version",)) or ""
             ),

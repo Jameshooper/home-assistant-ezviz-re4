@@ -1,4 +1,4 @@
-"""Constants for the EZVIZ RS20 Pro integration."""
+"""Constants for the EZVIZ RE4 integration."""
 
 from datetime import timedelta
 

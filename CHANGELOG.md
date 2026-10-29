@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0
+
+- Adapt the integration to the EZVIZ RE4 (`CS-RE4C-YWT`) robot vacuum.
+- Remove the dock-only sensors, base-station switches and camera snapshot
+  entity, which the RE4 does not report.
+- Discover the robot by its `SweepingRobot` category instead of the RS20 model.
+- Rename the user-facing integration to "EZVIZ RE4". The internal domain stays
+  `ezviz_rs20pro` so existing config entries keep working.
+
 ## 0.5.1
 
 - Add an original repository-local brand icon for HACS.

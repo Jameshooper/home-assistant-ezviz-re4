@@ -1,4 +1,4 @@
-"""Privacy-first, on-demand VTM camera access for the RS20 Pro."""
+"""Privacy-first, on-demand VTM camera access for the RE4."""
 
 from __future__ import annotations
 
@@ -70,11 +70,11 @@ def _find_resource(pagelist: dict[str, Any], serial: str, channel: int) -> tuple
         None,
     )
     if not isinstance(resource, dict):
-        raise PyEzvizError("Brak zasobu wideo RS20 Pro")
+        raise PyEzvizError("Brak zasobu wideo RE4")
     vtms = pagelist.get("VTM") or {}
     vtm = vtms.get(resource.get("resourceId")) if isinstance(vtms, dict) else None
     if not isinstance(vtm, dict):
-        raise PyEzvizError("Brak serwera transmisji VTM dla RS20 Pro")
+        raise PyEzvizError("Brak serwera transmisji VTM dla RE4")
     return resource, vtm
 
 
@@ -161,7 +161,7 @@ def capture_cloud_snapshot(
                 break
     raw = b"".join(payloads)
     if not raw:
-        raise PyEzvizError("Kamera RS20 Pro nie zwróciła obrazu")
+        raise PyEzvizError("Kamera RE4 nie zwróciła obrazu")
 
     candidates = [raw]
     get_cam_key = getattr(client, "get_cam_key", None)

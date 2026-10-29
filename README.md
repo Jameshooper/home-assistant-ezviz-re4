@@ -1,9 +1,9 @@
-# EZVIZ RS20 Pro for Home Assistant
+# EZVIZ RE4 for Home Assistant
 
 [Polski](README.pl.md) · English
 
-An unofficial Home Assistant custom integration for the **EZVIZ RS20 Pro**
-robot vacuum and its base station. Tested with model `CS-RS20-PRO-PGA2`.
+An unofficial Home Assistant custom integration for the **EZVIZ RE4**
+robot vacuum. Tested with model `CS-RE4C-YWT`.
 
 > This project is experimental and uses cloud endpoints observed in the EZVIZ
 > app because EZVIZ does not publish an API for the robot. Firmware or cloud
@@ -13,24 +13,15 @@ robot vacuum and its base station. Tested with model `CS-RS20-PRO-PGA2`.
 
 - Start, pause, stop and return the robot to the dock.
 - Native room selection and room cleaning in Home Assistant.
-- Battery, cleaned area and consumable-life sensors.
-- Base-station status: mop washing, mop drying, dust collection, tank draining
-  and optional water inlet/outlet module detection.
-- Base-station settings: child lock, automatic dust collection, automatic
-  cleaning-solution dosing and rotating-brush self-cleaning.
-- Privacy-first robot-camera snapshot, captured only after an explicit action.
-- Sanitized protocol, map and camera diagnostics.
+- Battery and consumable-life sensors (main brush, side brush, HEPA filter,
+  mop pads, sensors).
+- Sanitized protocol and map diagnostics.
 - UI translations: English, Polish, German, French, Spanish and Italian.
-
-Manual station actions that directly start the heater, pump or dust motor are
-not exposed until their protocol is verified. The setting switches above use
-confirmed feature identifiers and do not run a maintenance cycle when the
-integration starts.
 
 ## Requirements
 
 - Home Assistant 2026.7 or newer.
-- An EZVIZ RS20 Pro already added to the EZVIZ mobile app.
+- An EZVIZ RE4 already added to the EZVIZ mobile app.
 - The official **EZVIZ** Home Assistant integration configured and loaded.
 - Internet access from Home Assistant to the EZVIZ cloud.
 
@@ -43,9 +34,9 @@ It does not ask for or store another copy of your EZVIZ username or password.
 2. Open **Integrations**, then the three-dot menu and **Custom repositories**.
 3. Add `https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro` as an
    **Integration** repository.
-4. Find **EZVIZ RS20 Pro**, select **Download**, then restart Home Assistant.
+4. Find **EZVIZ RE4**, select **Download**, then restart Home Assistant.
 5. Go to **Settings → Devices & services → Add integration** and choose
-   **EZVIZ RS20 Pro**.
+   **EZVIZ RE4**.
 6. Select the official EZVIZ account entry. Leave the serial number empty for
    automatic discovery, or enter it when the account has several robots.
 
@@ -54,14 +45,7 @@ It does not ask for or store another copy of your EZVIZ username or password.
 1. Download the source archive from the latest GitHub release.
 2. Copy `custom_components/ezviz_rs20pro` into Home Assistant's
    `/config/custom_components/` directory.
-3. Restart Home Assistant and add **EZVIZ RS20 Pro** from the integration UI.
-
-## Camera privacy
-
-The image entity contains only the latest in-memory snapshot. The camera stream
-opens for a few seconds only when `ezviz_rs20pro.refresh_camera_snapshot` is
-called and closes immediately afterwards. The integration does not continuously
-record, write snapshots to disk or automatically open the camera.
+3. Restart Home Assistant and add **EZVIZ RE4** from the integration UI.
 
 ## Troubleshooting
 

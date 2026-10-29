@@ -1,9 +1,9 @@
-# EZVIZ RS20 Pro dla Home Assistanta
+# EZVIZ RE4 dla Home Assistanta
 
 Polski · [English](README.md)
 
-Nieoficjalna integracja Home Assistanta dla robota **EZVIZ RS20 Pro** i jego
-stacji bazowej. Przetestowana z modelem `CS-RS20-PRO-PGA2`.
+Nieoficjalna integracja Home Assistanta dla robota **EZVIZ RE4** .
+Przetestowana z modelem `CS-RE4C-YWT`.
 
 > Projekt jest eksperymentalny i korzysta z usług chmurowych rozpoznanych w
 > aplikacji EZVIZ, ponieważ producent nie publikuje API robota. Zmiana chmury
@@ -13,23 +13,15 @@ stacji bazowej. Przetestowana z modelem `CS-RS20-PRO-PGA2`.
 
 - Start, pauza, zatrzymanie i powrót robota do stacji.
 - Natywny wybór pomieszczeń i sprzątanie pokoi w Home Assistant.
-- Czujniki baterii, posprzątanej powierzchni i zużycia materiałów.
-- Stan stacji: mycie i suszenie mopów, opróżnianie kurzu i zbiornika oraz
-  wykrycie opcjonalnego modułu dopływu i odpływu wody.
-- Ustawienia stacji: blokada rodzicielska, automatyczne opróżnianie kurzu,
-  dozowanie płynu i samooczyszczanie szczotki obrotowej.
-- Zdjęcie z kamery robota wykonywane wyłącznie na wyraźne żądanie.
-- Zanonimizowana diagnostyka protokołu, mapy i kamery.
+- Czujniki baterii i zużycia materiałów (szczotka główna, szczotka boczna,
+  filtr HEPA, mopy, czujniki).
+- Zanonimizowana diagnostyka protokołu i mapy.
 - Interfejs po polsku, angielsku, niemiecku, francusku, hiszpańsku i włosku.
-
-Ręczne komendy uruchamiające grzałkę, pompę lub silnik odpylania nie są
-udostępnione, dopóki ich protokół nie zostanie jednoznacznie potwierdzony.
-Przełączniki ustawień nie uruchamiają cyklu konserwacji podczas startu HA.
 
 ## Wymagania
 
 - Home Assistant 2026.7 lub nowszy.
-- RS20 Pro dodany wcześniej w aplikacji mobilnej EZVIZ.
+- RE4 dodany wcześniej w aplikacji mobilnej EZVIZ.
 - Skonfigurowana i uruchomiona oficjalna integracja **EZVIZ** w HA.
 - Dostęp Home Assistanta do chmury EZVIZ.
 
@@ -43,9 +35,9 @@ kopię loginu ani hasła EZVIZ i ich nie zapisuje.
    **Niestandardowe repozytoria**.
 3. Dodaj `https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro` jako typ
    **Integracja**.
-4. Wyszukaj **EZVIZ RS20 Pro**, wybierz **Pobierz** i uruchom ponownie HA.
+4. Wyszukaj **EZVIZ RE4**, wybierz **Pobierz** i uruchom ponownie HA.
 5. Otwórz **Ustawienia → Urządzenia i usługi → Dodaj integrację** i wybierz
-   **EZVIZ RS20 Pro**.
+   **EZVIZ RE4**.
 6. Wskaż konto oficjalnej integracji EZVIZ. Numer seryjny zostaw pusty dla
    automatycznego wykrycia albo wpisz go, jeśli konto ma kilka robotów.
 
@@ -54,15 +46,7 @@ kopię loginu ani hasła EZVIZ i ich nie zapisuje.
 1. Pobierz kod źródłowy najnowszego wydania z GitHuba.
 2. Skopiuj katalog `custom_components/ezviz_rs20pro` do
    `/config/custom_components/` w Home Assistant.
-3. Uruchom HA ponownie i dodaj integrację **EZVIZ RS20 Pro** z interfejsu.
-
-## Prywatność kamery
-
-Encja obrazu przechowuje w pamięci tylko ostatnią klatkę. Kamera jest otwierana
-na kilka sekund wyłącznie po wywołaniu akcji
-`ezviz_rs20pro.refresh_camera_snapshot`, po czym transmisja jest zamykana.
-Integracja nie nagrywa stale, nie zapisuje zdjęć na dysku i nie uruchamia kamery
-automatycznie.
+3. Uruchom HA ponownie i dodaj integrację **EZVIZ RE4** z interfejsu.
 
 ## Rozwiązywanie problemów
 

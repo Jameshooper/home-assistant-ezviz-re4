@@ -1,4 +1,4 @@
-"""RS20 Pro requests layered on the authenticated pyezviz client."""
+"""RE4 requests layered on the authenticated pyezviz client."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import zlib
 
 
 class EzvizRs20ProApiError(Exception):
-    """Raised when the RS20 Pro endpoint rejects a request."""
+    """Raised when the RE4 endpoint rejects a request."""
 
 
 class EzvizRs20ProApi:
@@ -33,7 +33,7 @@ class EzvizRs20ProApi:
     def clean_control(self, serial: str, command: str) -> dict[str, Any]:
         """Run one of the documented cleaning controls."""
         if command not in {"start", "pause", "stop", "return_charge"}:
-            raise ValueError(f"Nieobsługiwana komenda RS20 Pro: {command}")
+            raise ValueError(f"Nieobsługiwana komenda RE4: {command}")
         return self._iot_request(
             serial,
             endpoint="action",
@@ -45,7 +45,7 @@ class EzvizRs20ProApi:
     def set_clean_mode(self, serial: str, mode: str) -> dict[str, Any]:
         """Set the documented sweep/mop mode."""
         if mode not in {"dustAbsorption", "mop", "sweepMop"}:
-            raise ValueError(f"Nieobsługiwany tryb RS20 Pro: {mode}")
+            raise ValueError(f"Nieobsługiwany tryb RE4: {mode}")
         return self._iot_request(
             serial,
             endpoint="feature",
@@ -71,7 +71,7 @@ class EzvizRs20ProApi:
         }
         if (domain, identifier) not in supported:
             raise ValueError(
-                f"Unsupported RS20 Pro station feature: {domain}/{identifier}"
+                f"Unsupported RE4 station feature: {domain}/{identifier}"
             )
         if not isinstance(value.get("enabled"), bool):
             raise ValueError("Station setting requires a boolean 'enabled' value")

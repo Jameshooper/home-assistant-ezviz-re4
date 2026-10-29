@@ -1,25 +1,62 @@
 {
-  "title": "EZVIZ RS20 Pro",
+  "title": "EZVIZ RE4",
   "config": {
-    "step": { "user": { "title": "Conectar EZVIZ RS20 Pro", "description": "Esta integración reutiliza la sesión activa de la integración oficial de EZVIZ. Deja vacío el número de serie para detectar automáticamente un RS20 Pro.", "data": { "source_entry_id": "Cuenta EZVIZ", "serial": "Número de serie (opcional)" } } },
-    "abort": { "already_configured": "EZVIZ RS20 Pro ya está configurado.", "ezviz_not_configured": "Configura primero la integración oficial de EZVIZ." }
+    "step": {
+      "user": {
+        "title": "Conectar EZVIZ RE4",
+        "description": "Esta integración reutiliza la sesión activa de la integración oficial de EZVIZ. Deja vacío el número de serie para detectar automáticamente un RE4.",
+        "data": {
+          "source_entry_id": "Cuenta EZVIZ",
+          "serial": "Número de serie (opcional)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "EZVIZ RE4 ya está configurado.",
+      "ezviz_not_configured": "Configura primero la integración oficial de EZVIZ."
+    }
   },
   "entity": {
-    "image": { "camera_snapshot": { "name": "Cámara — última captura" } },
     "sensor": {
-      "battery": { "name": "Batería" }, "total_clean_area": { "name": "Superficie total limpiada" }, "main_brush": { "name": "Cepillo principal" }, "side_brush": { "name": "Cepillo lateral" }, "hepa_filter": { "name": "Filtro HEPA" }, "mop": { "name": "Mopas" }, "dust_bag": { "name": "Bolsa de polvo" }, "sensors": { "name": "Sensores" }, "cleaning_solution": { "name": "Solución de limpieza" },
-      "station_mop_washing": { "name": "Estación — lavado de mopas", "state": { "success": "Completado", "running": "Lavando", "idle": "Inactiva", "error": "Error" } },
-      "station_mop_drying": { "name": "Estación — secado de mopas", "state": { "success": "Completado", "running": "Secando", "idle": "Inactiva", "error": "Error" } },
-      "station_dust_collection": { "name": "Estación — recogida de polvo", "state": { "success": "Completado", "running": "Vaciando", "idle": "Inactiva", "error": "Error" } },
-      "station_water_tank_drain": { "name": "Estación — vaciado del depósito", "state": { "success": "Completado", "running": "Vaciando", "idle": "Inactiva", "error": "Error" } },
-      "station_plumbing_module": { "name": "Módulo de entrada/salida de agua", "state": { "installed": "Instalado", "not_installed": "No instalado" } }
-    },
-    "switch": { "station_child_lock": { "name": "Estación — bloqueo infantil" }, "station_automatic_dust_collection": { "name": "Recogida automática de polvo" }, "station_automatic_cleaning_solution": { "name": "Dosificación automática de detergente" }, "station_rotating_brush_self_clean": { "name": "Autolimpieza del cepillo giratorio" } }
+      "battery": {
+        "name": "Batería"
+      },
+      "total_clean_area": {
+        "name": "Superficie total limpiada"
+      },
+      "main_brush": {
+        "name": "Cepillo principal"
+      },
+      "side_brush": {
+        "name": "Cepillo lateral"
+      },
+      "hepa_filter": {
+        "name": "Filtro HEPA"
+      },
+      "mop": {
+        "name": "Mopas"
+      },
+      "sensors": {
+        "name": "Sensores"
+      }
+    }
   },
   "services": {
-    "inspect": { "name": "Inspeccionar RS20 Pro", "description": "Devuelve datos saneados del dispositivo para diagnosticar el protocolo." },
-    "map_diagnostics": { "name": "Inspeccionar mapa del RS20 Pro", "description": "Prueba el acceso de solo lectura al mapa y la ruta sin controlar el robot." },
-    "camera_diagnostics": { "name": "Inspeccionar cámara del RS20 Pro", "description": "Abre brevemente el diagnóstico de transporte sin guardar imágenes." },
-    "refresh_camera_snapshot": { "name": "Capturar imagen del RS20 Pro", "description": "Abre brevemente la cámara, guarda un fotograma en memoria y cierra la transmisión." }
+    "inspect": {
+      "name": "Inspeccionar RE4",
+      "description": "Devuelve datos saneados del dispositivo para diagnosticar el protocolo."
+    },
+    "map_diagnostics": {
+      "name": "Inspeccionar mapa del RE4",
+      "description": "Prueba el acceso de solo lectura al mapa y la ruta sin controlar el robot."
+    },
+    "camera_diagnostics": {
+      "name": "Inspeccionar cámara del RE4",
+      "description": "Abre brevemente el diagnóstico de transporte sin guardar imágenes."
+    },
+    "refresh_camera_snapshot": {
+      "name": "Capturar imagen del RE4",
+      "description": "Abre brevemente la cámara, guarda un fotograma en memoria y cierra la transmisión."
+    }
   }
 }

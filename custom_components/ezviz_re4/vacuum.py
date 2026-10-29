@@ -14,7 +14,7 @@ from homeassistant.components.vacuum import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, UpdateFailed
 
 from .const import DOMAIN
 from .coordinator import EzvizRe4Coordinator
@@ -22,14 +22,6 @@ from .coordinator import EzvizRe4Coordinator
 _ERROR_TRANSLATIONS = {
     "CR_CleanWaterBoxLow": "Mało wody w zbiorniku czystej wody",
 }
-
-_ROOM_TRANSLATIONS = {
-    "#@ChuF#": "Kuchnia",
-    "#@KeT#": "Salon",
-    "#@WoS#": "Sypialnia",
-    "#@XuanG#": "Przedpokój",
-}
-
 
 def _find_value(value: Any, keys: tuple[str, ...]) -> Any | None:
     """Find the first matching key in a nested mapping."""
@@ -149,30 +141,22 @@ class EzvizRe4Vacuum(CoordinatorEntity[EzvizRe4Coordinator], StateVacuumEntity):
 
     async def async_return_to_base(self, **kwargs: Any) -> None:
         """Return the robot to its base."""
-        await self.coordinator.async_clean_control("return_charge")
+        await self.coordinator.async_recharge()
 
     async def async_get_segments(self) -> list[Segment]:
         """Return the rooms available on the active robot map."""
         await self.coordinator.async_request_refresh()
-        device = self.coordinator.data.get("device", {})
         try:
-            map_mgr = device["FEATURE_INFO"]["0"]["SweepingRobot"]["SweeperMapMgr"]
-            map_info = map_mgr["RegionBasicInfo"]["mapList"][0]
-            map_id = str(map_info["mapID"])
-            regions = map_info["regionList"]
-        except (KeyError, IndexError, TypeError):
+            map_id, room_ids = self.coordinator.active_map_rooms()
+        except UpdateFailed:
             return []
         return [
             Segment(
-                id=str(region["ID"]),
-                name=_ROOM_TRANSLATIONS.get(
-                    str(region.get("name", "")),
-                    str(region.get("name") or f"Pokój {region['ID']}"),
-                ),
-                group=f"Mapa {map_id}",
+                id=str(room_id),
+                name=f"Room {room_id}",
+                group=f"Map {map_id}",
             )
-            for region in regions
-            if region.get("regionType") == "room" and region.get("ID") is not None
+            for room_id in room_ids
         ]
 
     async def async_clean_segments(

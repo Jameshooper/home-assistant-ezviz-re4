@@ -78,17 +78,48 @@ class ApiTests(unittest.TestCase):
         ))
         self.assertEqual(call["data"], "{}")
 
-    def test_clean_control_uses_json_string(self) -> None:
-        self.api.clean_control("AB1234567", "return_charge")
+    def test_clean_control_uses_clean_ctrl_object(self) -> None:
+        self.api.clean_control("ab1234567", "pause")
         call = self.client._session.calls[0]
         self.assertTrue(call["url"].endswith(
-            "/AB1234567/SweepingRobot/0/SweeperCleanTask/CleanControl"
+            "/AB1234567/SweepingRobot/0/SweeperCleanTask/CleanCtrl"
         ))
-        self.assertEqual(json.loads(call["data"]), "return_charge")
+        self.assertEqual(
+            json.loads(call["data"]), {"action": "pause", "source": "mobile"}
+        )
+
+    def test_recharge_control_uses_recharge_ctrl_object(self) -> None:
+        self.api.recharge_control("ab1234567", "start")
+        call = self.client._session.calls[0]
+        self.assertTrue(call["url"].endswith(
+            "/AB1234567/SweepingRobot/0/SweeperTaskMgr/RechargeCtrl"
+        ))
+        self.assertEqual(
+            json.loads(call["data"]), {"action": "start", "source": "mobile"}
+        )
+
+    def test_region_clean_sends_only_map_and_room_ids(self) -> None:
+        self.api.start_region_clean("ab1234567", map_id=5, room_ids=[2, 4])
+        call = self.client._session.calls[0]
+        self.assertTrue(call["url"].endswith(
+            "/AB1234567/SweepingRobot/0/SweeperCleanTask/StartRegionClean"
+        ))
+        self.assertEqual(
+            json.loads(call["data"]),
+            {
+                "mapID": 5,
+                "region": [
+                    {"regionType": "room", "roomID": 2},
+                    {"regionType": "room", "roomID": 4},
+                ],
+            },
+        )
 
     def test_unknown_command_is_rejected_locally(self) -> None:
         with self.assertRaises(ValueError):
             self.api.clean_control("AB1234567", "factory_reset")
+        with self.assertRaises(ValueError):
+            self.api.recharge_control("AB1234567", "pause")
         self.assertEqual(self.client._session.calls, [])
 
     def test_map_path_candidates_are_read_only_posts(self) -> None:
@@ -101,22 +132,6 @@ class ApiTests(unittest.TestCase):
                 {"deviceSerial": "AB1234567", "mapId": "5"},
             )
 
-    def test_start_region_clean_uses_native_room_action(self) -> None:
-        room = {
-            "fanMode": "normal",
-            "cleanTimes": 1,
-            "regionType": "room",
-            "customRegionID": 0,
-            "waterQuantity": "middle",
-            "roomID": 8,
-            "order": 1,
-        }
-        self.api.start_region_clean("ab1234567", map_id=5, rooms=[room])
-        call = self.client._session.calls[0]
-        self.assertTrue(call["url"].endswith(
-            "/AB1234567/SweepingRobot/0/SweeperCleanTask/StartRegionClean"
-        ))
-        self.assertEqual(json.loads(call["data"])["region"], [room])
 
     def test_decode_diagnostic_blob(self) -> None:
         content = base64.b64encode(gzip.compress(b'{"path":[1,2,3]}')).decode()

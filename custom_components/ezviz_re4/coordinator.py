@@ -139,38 +139,56 @@ class EzvizRe4Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         await self.async_request_refresh()
 
-    async def async_clean_segments(self, segment_ids: list[str]) -> None:
-        """Start a native room-cleaning task for selected segment IDs."""
+    async def async_recharge(self) -> None:
+        """Send the robot back to its base and refresh state."""
         if self.re4_api is None:
-            raise UpdateFailed("Klient RE4 nie jest gotowy")
-        device = self.data.get("device", {})
-        try:
-            map_mgr = device["FEATURE_INFO"]["0"]["SweepingRobot"]["SweeperMapMgr"]
-            map_id = int(map_mgr["MapBasicProperty"][0]["mapID"])
-            configs = map_mgr["RoomCustomCleanCfg"][0]["room"]
-        except (KeyError, IndexError, TypeError, ValueError) as err:
-            raise UpdateFailed("Brak konfiguracji pomieszczeń RE4") from err
+            raise UpdateFailed("RE4 client is not ready")
+        await self.hass.async_add_executor_job(
+            self.re4_api.recharge_control,
+            self.serial,
+            "start",
+        )
+        await self.async_request_refresh()
 
-        requested = {str(item) for item in segment_ids}
-        rooms = [dict(item) for item in configs if str(item.get("roomID")) in requested]
-        found = {str(item.get("roomID")) for item in rooms}
-        missing = requested - found
-        if missing:
-            raise UpdateFailed(
-                f"Nieznane pomieszczenia RE4: {', '.join(sorted(missing))}"
+    def active_map_rooms(self) -> tuple[int, list[int]]:
+        """Return the in-use map ID and its room IDs from the robot's config."""
+        try:
+            map_mgr = self.data["device"]["FEATURE_INFO"]["0"]["SweepingRobot"][
+                "SweeperMapMgr"
+            ]
+            maps = map_mgr["MapBasicProperty"]
+            active = next((item for item in maps if item.get("inUse")), maps[0])
+            map_id = int(active["mapID"])
+            configs = next(
+                item["room"]
+                for item in map_mgr["RoomCustomCleanCfg"]
+                if int(item["mapID"]) == map_id
             )
-        for order, room in enumerate(rooms, start=1):
-            room["order"] = order
+            return map_id, [int(room["roomID"]) for room in configs]
+        except (KeyError, IndexError, StopIteration, TypeError, ValueError) as err:
+            raise UpdateFailed("No room configuration reported for the RE4") from err
+
+    async def async_clean_segments(self, segment_ids: list[str]) -> None:
+        """Start a native room-cleaning task on the in-use map."""
+        if self.re4_api is None:
+            raise UpdateFailed("RE4 client is not ready")
+        map_id, known = self.active_map_rooms()
+        try:
+            room_ids = [int(item) for item in segment_ids]
+        except ValueError as err:
+            raise UpdateFailed("Invalid RE4 room selection") from err
+        missing = sorted(set(room_ids) - set(known))
+        if missing:
+            raise UpdateFailed(f"Unknown RE4 rooms: {', '.join(map(str, missing))}")
         await self.hass.async_add_executor_job(
             partial(
                 self.re4_api.start_region_clean,
                 self.serial,
                 map_id=map_id,
-                rooms=rooms,
+                room_ids=room_ids,
             )
         )
         await self.async_request_refresh()
-
 
 
 def get_source_entry(hass: HomeAssistant, entry: ConfigEntry) -> ConfigEntry:

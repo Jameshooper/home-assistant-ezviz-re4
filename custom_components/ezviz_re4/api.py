@@ -31,15 +31,31 @@ class EzvizRe4Api:
         )
 
     def clean_control(self, serial: str, command: str) -> dict[str, Any]:
-        """Run one of the documented cleaning controls."""
-        if command not in {"start", "pause", "stop", "return_charge"}:
-            raise ValueError(f"Nieobsługiwana komenda RE4: {command}")
+        """Start, resume, pause or stop cleaning.
+
+        The RE4 rejects the bare-string CleanControl used by the RS20 with
+        HTTP 400 and expects CleanCtrl with an object payload.
+        """
+        if command not in {"start", "resume", "pause", "stop"}:
+            raise ValueError(f"Unsupported RE4 command: {command}")
         return self._iot_request(
             serial,
             endpoint="action",
             domain="SweeperCleanTask",
-            identifier="CleanControl",
-            payload=command,
+            identifier="CleanCtrl",
+            payload={"action": command, "source": "mobile"},
+        )
+
+    def recharge_control(self, serial: str, command: str) -> dict[str, Any]:
+        """Send the robot to its base ("start") or cancel that ("stop")."""
+        if command not in {"start", "stop"}:
+            raise ValueError(f"Unsupported RE4 recharge command: {command}")
+        return self._iot_request(
+            serial,
+            endpoint="action",
+            domain="SweeperTaskMgr",
+            identifier="RechargeCtrl",
+            payload={"action": command, "source": "mobile"},
         )
 
     def start_region_clean(
@@ -47,17 +63,16 @@ class EzvizRe4Api:
         serial: str,
         *,
         map_id: int,
-        rooms: list[dict[str, Any]],
-        clean_mode: str = "sweep",
+        room_ids: list[int],
     ) -> dict[str, Any]:
-        """Start cleaning selected map rooms using the robot's native action."""
-        if not rooms:
-            raise ValueError("Nie wybrano żadnego pomieszczenia")
+        """Clean selected rooms with the settings stored on the robot."""
+        if not room_ids:
+            raise ValueError("No room selected")
         payload = {
-            "cleanMode": clean_mode,
             "mapID": int(map_id),
-            "region": rooms,
-            "edgeDeepClean": False,
+            "region": [
+                {"regionType": "room", "roomID": int(room_id)} for room_id in room_ids
+            ],
         }
         return self._iot_request(
             serial,

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.1
+
+- Fix start, pause, stop and return to dock on the RE4: it uses `CleanCtrl` and
+  `RechargeCtrl` with an object payload, not the RS20's bare-string
+  `CleanControl` (EZVIZ answered HTTP 400).
+- Send room cleaning as the app does (map ID plus room IDs only).
+- List rooms from the in-use map's room config, since the RE4 does not report
+  `RegionBasicInfo`.
+- Request formats were checked against the open-source
+  [ha-ezviz-vacuum](https://github.com/stefanelul2000/ha-ezviz-vacuum) project
+  (Apache-2.0), which supports RE4 models.
+
 ## 0.6.0
 
 - Adapt the integration to the EZVIZ RE4 (`CS-RE4C-YWT`) robot vacuum.

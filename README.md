@@ -32,7 +32,7 @@ It does not ask for or store another copy of your EZVIZ username or password.
 
 1. Open HACS in Home Assistant.
 2. Open **Integrations**, then the three-dot menu and **Custom repositories**.
-3. Add `https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro` as an
+3. Add `https://github.com/Jameshooper/home-assistant-ezviz-re4` as an
    **Integration** repository.
 4. Find **EZVIZ RE4**, select **Download**, then restart Home Assistant.
 5. Go to **Settings → Devices & services → Add integration** and choose

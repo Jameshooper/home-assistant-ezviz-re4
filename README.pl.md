@@ -33,7 +33,7 @@ kopię loginu ani hasła EZVIZ i ich nie zapisuje.
 1. Otwórz HACS w Home Assistant.
 2. Wejdź w **Integracje**, otwórz menu z trzema kropkami i wybierz
    **Niestandardowe repozytoria**.
-3. Dodaj `https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro` jako typ
+3. Dodaj `https://github.com/Jameshooper/home-assistant-ezviz-re4` jako typ
    **Integracja**.
 4. Wyszukaj **EZVIZ RE4**, wybierz **Pobierz** i uruchom ponownie HA.
 5. Otwórz **Ustawienia → Urządzenia i usługi → Dodaj integrację** i wybierz

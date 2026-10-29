@@ -49,14 +49,6 @@
     "map_diagnostics": {
       "name": "RE4-Karte prüfen",
       "description": "Testet den schreibgeschützten Karten- und Routenzugriff ohne Robotersteuerung."
-    },
-    "camera_diagnostics": {
-      "name": "RE4-Kamera prüfen",
-      "description": "Öffnet kurz die Transportdiagnose, ohne ein Bild zu speichern."
-    },
-    "refresh_camera_snapshot": {
-      "name": "RE4-Kamerabild aufnehmen",
-      "description": "Öffnet die Kamera kurz, speichert ein Bild im Speicher und schließt den Stream."
     }
   }
 }

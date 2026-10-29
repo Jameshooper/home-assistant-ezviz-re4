@@ -49,14 +49,6 @@
     "map_diagnostics": {
       "name": "Inspeccionar mapa del RE4",
       "description": "Prueba el acceso de solo lectura al mapa y la ruta sin controlar el robot."
-    },
-    "camera_diagnostics": {
-      "name": "Inspeccionar cámara del RE4",
-      "description": "Abre brevemente el diagnóstico de transporte sin guardar imágenes."
-    },
-    "refresh_camera_snapshot": {
-      "name": "Capturar imagen del RE4",
-      "description": "Abre brevemente la cámara, guarda un fotograma en memoria y cierra la transmisión."
     }
   }
 }

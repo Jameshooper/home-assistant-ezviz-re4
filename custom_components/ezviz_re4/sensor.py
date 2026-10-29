@@ -19,7 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import EzvizRe4ProCoordinator
+from .coordinator import EzvizRe4Coordinator
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -133,7 +133,7 @@ def _find_scalar(value: Any, key: str) -> Any | None:
 
 async def async_setup_entry(
     hass: Any,
-    entry: ConfigEntry[EzvizRe4ProCoordinator],
+    entry: ConfigEntry[EzvizRe4Coordinator],
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up RE4 sensors."""
@@ -142,7 +142,7 @@ async def async_setup_entry(
     )
 
 
-class Re4Sensor(CoordinatorEntity[EzvizRe4ProCoordinator], SensorEntity):
+class Re4Sensor(CoordinatorEntity[EzvizRe4Coordinator], SensorEntity):
     """A sensor sourced from the RE4 feature report."""
 
     _attr_has_entity_name = True
@@ -150,7 +150,7 @@ class Re4Sensor(CoordinatorEntity[EzvizRe4ProCoordinator], SensorEntity):
 
     def __init__(
         self,
-        coordinator: EzvizRe4ProCoordinator,
+        coordinator: EzvizRe4Coordinator,
         description: Re4SensorDescription,
     ) -> None:
         super().__init__(coordinator)

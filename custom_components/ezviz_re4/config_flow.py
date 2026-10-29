@@ -13,7 +13,7 @@ from homeassistant.helpers import selector
 from .const import CONF_SERIAL, CONF_SOURCE_ENTRY_ID, DOMAIN, SOURCE_DOMAIN
 
 
-class EzvizRe4ProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class EzvizRe4ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Configure EZVIZ RE4 by reusing the official EZVIZ session."""
 
     VERSION = 1

@@ -49,14 +49,6 @@
     "map_diagnostics": {
       "name": "Sprawdź mapę RE4",
       "description": "Testuje wyłącznie odczyt mapy i trasy, bez sterowania robotem."
-    },
-    "camera_diagnostics": {
-      "name": "Sprawdź kamerę RE4",
-      "description": "Otwiera krótką transmisję diagnostyczną bez zapisywania obrazu."
-    },
-    "refresh_camera_snapshot": {
-      "name": "Zrób zdjęcie kamerą RE4",
-      "description": "Otwiera kamerę na kilka sekund, zapisuje jedną klatkę w pamięci i zamyka transmisję."
     }
   }
 }

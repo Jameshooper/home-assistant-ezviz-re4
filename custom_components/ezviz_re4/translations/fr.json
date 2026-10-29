@@ -49,14 +49,6 @@
     "map_diagnostics": {
       "name": "Inspecter la carte du RE4",
       "description": "Teste l’accès en lecture seule à la carte et au trajet sans commander le robot."
-    },
-    "camera_diagnostics": {
-      "name": "Inspecter la caméra du RE4",
-      "description": "Ouvre brièvement le diagnostic de transport sans enregistrer d’image."
-    },
-    "refresh_camera_snapshot": {
-      "name": "Capturer une image du RE4",
-      "description": "Ouvre brièvement la caméra, conserve une image en mémoire puis ferme le flux."
     }
   }
 }

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime
 from functools import partial
 from typing import Any
 
@@ -15,8 +14,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .api import EzvizRe4ProApi
-from .cloud_camera import capture_cloud_snapshot, trace_cloud_stream
+from .api import EzvizRe4Api
 from .const import (
     CONF_SERIAL,
     CONF_SOURCE_ENTRY_ID,
@@ -56,7 +54,7 @@ def _is_sweeping_robot(value: Any) -> bool:
     return False
 
 
-class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+class EzvizRe4Coordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Fetch RE4 data through the already authenticated EZVIZ client."""
 
     def __init__(
@@ -74,9 +72,7 @@ class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entry = entry
         self.source_entry = source_entry
         self.serial: str = entry.data.get(CONF_SERIAL, "")
-        self.re4_api: EzvizRe4ProApi | None = None
-        self.camera_snapshot: bytes | None = None
-        self.camera_snapshot_updated: datetime | None = None
+        self.re4_api: EzvizRe4Api | None = None
 
     def _api(self) -> Any:
         if self.source_entry.state is not ConfigEntryState.LOADED:
@@ -114,7 +110,7 @@ class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             selected_serial, selected = matches[0]
             self.serial = selected_serial
 
-        self.re4_api = EzvizRe4ProApi(source_api)
+        self.re4_api = EzvizRe4Api(source_api)
         task: dict[str, Any] = {}
         task_error: str | None = None
         try:
@@ -140,38 +136,6 @@ class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self.re4_api.clean_control,
             self.serial,
             command,
-        )
-        await self.async_request_refresh()
-
-    async def async_set_clean_mode(self, mode: str) -> None:
-        """Set cleaning mode and refresh state."""
-        if self.re4_api is None:
-            raise UpdateFailed("Klient RE4 nie jest gotowy")
-        await self.hass.async_add_executor_job(
-            self.re4_api.set_clean_mode,
-            self.serial,
-            mode,
-        )
-        await self.async_request_refresh()
-
-    async def async_set_station_feature(
-        self,
-        *,
-        domain: str,
-        identifier: str,
-        value: dict[str, Any],
-    ) -> None:
-        """Update an allow-listed station setting and refresh device state."""
-        if self.re4_api is None:
-            raise UpdateFailed("RE4 client is not ready")
-        await self.hass.async_add_executor_job(
-            partial(
-                self.re4_api.set_station_feature,
-                self.serial,
-                domain=domain,
-                identifier=identifier,
-                value=value,
-            )
         )
         await self.async_request_refresh()
 
@@ -207,28 +171,6 @@ class EzvizRe4ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         await self.async_request_refresh()
 
-    async def async_camera_trace(self) -> dict[str, Any]:
-        """Open a short, body-free camera transport diagnostic."""
-        return await self.hass.async_add_executor_job(
-            trace_cloud_stream,
-            self._api(),
-            self.serial,
-        )
-
-    async def async_refresh_camera_snapshot(self, ffmpeg_path: str) -> None:
-        """Capture one image on demand and immediately close the video stream."""
-        from homeassistant.util import dt as dt_util
-
-        self.camera_snapshot = await self.hass.async_add_executor_job(
-            partial(
-                capture_cloud_snapshot,
-                self._api(),
-                self.serial,
-                ffmpeg_path,
-            )
-        )
-        self.camera_snapshot_updated = dt_util.utcnow()
-        self.async_update_listeners()
 
 
 def get_source_entry(hass: HomeAssistant, entry: ConfigEntry) -> ConfigEntry:

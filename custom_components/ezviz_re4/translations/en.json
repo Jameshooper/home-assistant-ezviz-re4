@@ -49,14 +49,6 @@
     "map_diagnostics": {
       "name": "Inspect RE4 map",
       "description": "Tests read-only map and route access without controlling the robot."
-    },
-    "camera_diagnostics": {
-      "name": "Inspect RE4 camera",
-      "description": "Opens a short transport diagnostic without saving an image."
-    },
-    "refresh_camera_snapshot": {
-      "name": "Capture RE4 snapshot",
-      "description": "Opens the camera briefly, stores one frame in memory and closes the stream."
     }
   }
 }

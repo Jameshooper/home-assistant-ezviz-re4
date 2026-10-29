@@ -12,5 +12,3 @@ DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
 SERVICE_INSPECT = "inspect"
 SERVICE_MAP_DIAGNOSTICS = "map_diagnostics"
-SERVICE_CAMERA_DIAGNOSTICS = "camera_diagnostics"
-SERVICE_REFRESH_CAMERA = "refresh_camera_snapshot"

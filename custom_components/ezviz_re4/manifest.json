@@ -4,11 +4,9 @@
   "after_dependencies": ["ezviz"],
   "codeowners": ["@Jameshooper"],
   "config_flow": true,
-  "dependencies": ["ffmpeg"],
   "documentation": "https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro",
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/Jameshooper/home-assistant-ezviz-rs20-pro/issues",
-  "requirements": ["pycryptodome==3.23.0"],
   "version": "0.6.0"
 }

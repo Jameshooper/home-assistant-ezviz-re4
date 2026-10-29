@@ -10,11 +10,11 @@ from typing import Any
 import zlib
 
 
-class EzvizRe4ProApiError(Exception):
+class EzvizRe4ApiError(Exception):
     """Raised when the RE4 endpoint rejects a request."""
 
 
-class EzvizRe4ProApi:
+class EzvizRe4Api:
     """Use the official integration's session without copying credentials."""
 
     def __init__(self, client: Any) -> None:
@@ -40,47 +40,6 @@ class EzvizRe4ProApi:
             domain="SweeperCleanTask",
             identifier="CleanControl",
             payload=command,
-        )
-
-    def set_clean_mode(self, serial: str, mode: str) -> dict[str, Any]:
-        """Set the documented sweep/mop mode."""
-        if mode not in {"dustAbsorption", "mop", "sweepMop"}:
-            raise ValueError(f"Nieobsługiwany tryb RE4: {mode}")
-        return self._iot_request(
-            serial,
-            endpoint="feature",
-            domain="SweeperCleanTask",
-            identifier="SweepMopMode",
-            payload=mode,
-        )
-
-    def set_station_feature(
-        self,
-        serial: str,
-        *,
-        domain: str,
-        identifier: str,
-        value: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Update an allow-listed base-station setting."""
-        supported = {
-            ("SweeperBaseStationMgr", "ChildLockSwitch"),
-            ("SweeperCleanTask", "DustCollectionCfg"),
-            ("SweeperCleanTask", "CleaningSolutionCfg"),
-            ("SweeperCleanTask", "RotatingBrushSelfCleanSwitch"),
-        }
-        if (domain, identifier) not in supported:
-            raise ValueError(
-                f"Unsupported RE4 station feature: {domain}/{identifier}"
-            )
-        if not isinstance(value.get("enabled"), bool):
-            raise ValueError("Station setting requires a boolean 'enabled' value")
-        return self._iot_request(
-            serial,
-            endpoint="feature",
-            domain=domain,
-            identifier=identifier,
-            payload=value,
         )
 
     def start_region_clean(
@@ -141,10 +100,10 @@ class EzvizRe4ProApi:
         session = getattr(self._client, "_session", None)
         token = getattr(self._client, "_token", None)
         if session is None or not isinstance(token, dict):
-            raise EzvizRe4ProApiError("Aktywna sesja EZVIZ jest niedostępna")
+            raise EzvizRe4ApiError("Aktywna sesja EZVIZ jest niedostępna")
         api_url = token.get("api_url")
         if not api_url:
-            raise EzvizRe4ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
+            raise EzvizRe4ApiError("Brak adresu API w aktywnej sesji EZVIZ")
 
         routes = (
             "/v3/specialBizs/sweeprobot/v3/rule/path",
@@ -219,10 +178,10 @@ class EzvizRe4ProApi:
         session = getattr(self._client, "_session", None)
         token = getattr(self._client, "_token", None)
         if session is None or not isinstance(token, dict):
-            raise EzvizRe4ProApiError("Aktywna sesja EZVIZ jest niedostępna")
+            raise EzvizRe4ApiError("Aktywna sesja EZVIZ jest niedostępna")
         api_url = token.get("api_url")
         if not api_url:
-            raise EzvizRe4ProApiError("Brak adresu API w aktywnej sesji EZVIZ")
+            raise EzvizRe4ApiError("Brak adresu API w aktywnej sesji EZVIZ")
 
         url = (
             f"https://{api_url}/v3/iot-feature/{endpoint}/"
@@ -239,11 +198,11 @@ class EzvizRe4ProApi:
         response.raise_for_status()
         result = response.json()
         if not isinstance(result, dict):
-            raise EzvizRe4ProApiError("EZVIZ zwrócił nieprawidłową odpowiedź")
+            raise EzvizRe4ApiError("EZVIZ zwrócił nieprawidłową odpowiedź")
 
         meta = result.get("meta")
         code = meta.get("code") if isinstance(meta, dict) else result.get("code")
         if code not in (None, 0, 200, "0", "200"):
             message = meta.get("message") if isinstance(meta, dict) else result.get("msg")
-            raise EzvizRe4ProApiError(f"EZVIZ odrzucił żądanie {code}: {message}")
+            raise EzvizRe4ApiError(f"EZVIZ odrzucił żądanie {code}: {message}")
         return result

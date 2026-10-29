@@ -1,0 +1,12 @@
+{
+  "domain": "ezviz_re4",
+  "name": "EZVIZ RE4",
+  "after_dependencies": ["ezviz"],
+  "codeowners": ["@Jameshooper"],
+  "config_flow": true,
+  "documentation": "https://github.com/Jameshooper/home-assistant-ezviz-re4",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/Jameshooper/home-assistant-ezviz-re4/issues",
+  "version": "0.6.0"
+}

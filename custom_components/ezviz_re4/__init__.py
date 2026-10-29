@@ -1,4 +1,4 @@
-"""EZVIZ RS20 Pro integration."""
+"""EZVIZ RE4 integration."""
 
 from __future__ import annotations
 
@@ -11,16 +11,14 @@ from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 
 from .const import (
     DOMAIN,
-    SERVICE_CAMERA_DIAGNOSTICS,
     SERVICE_INSPECT,
     SERVICE_MAP_DIAGNOSTICS,
-    SERVICE_REFRESH_CAMERA,
 )
-from .coordinator import EzvizRs20ProCoordinator, get_source_entry
+from .coordinator import EzvizRe4Coordinator, get_source_entry
 
-PLATFORMS = [Platform.IMAGE, Platform.SENSOR, Platform.SWITCH, Platform.VACUUM]
+PLATFORMS = [Platform.SENSOR, Platform.VACUUM]
 
-type EzvizRs20ProConfigEntry = ConfigEntry[EzvizRs20ProCoordinator]
+type EzvizRe4ConfigEntry = ConfigEntry[EzvizRe4Coordinator]
 
 _SENSITIVE_PARTS = (
     "accesscode",
@@ -52,10 +50,10 @@ def _sanitize(value: Any) -> Any:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: EzvizRs20ProConfigEntry
+    hass: HomeAssistant, entry: EzvizRe4ConfigEntry
 ) -> bool:
-    """Set up EZVIZ RS20 Pro from a config entry."""
-    coordinator = EzvizRs20ProCoordinator(hass, entry, get_source_entry(hass, entry))
+    """Set up EZVIZ RE4 from a config entry."""
+    coordinator = EzvizRe4Coordinator(hass, entry, get_source_entry(hass, entry))
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
 
@@ -67,11 +65,11 @@ async def async_setup_entry(
             """Return sanitized raw device data for protocol discovery."""
             entries = hass.config_entries.async_entries(DOMAIN)
             if not entries:
-                return {"error": "Integracja EZVIZ RS20 Pro nie jest skonfigurowana"}
+                return {"error": "Integracja EZVIZ RE4 nie jest skonfigurowana"}
             active = entries[0]
             runtime = getattr(active, "runtime_data", None)
-            if not isinstance(runtime, EzvizRs20ProCoordinator):
-                return {"error": "Integracja EZVIZ RS20 Pro nie jest załadowana"}
+            if not isinstance(runtime, EzvizRe4Coordinator):
+                return {"error": "Integracja EZVIZ RE4 nie jest załadowana"}
             await runtime.async_request_refresh()
             return _sanitize(runtime.data)
 
@@ -88,14 +86,14 @@ async def async_setup_entry(
             """Probe read-only map routes without returning authentication data."""
             entries = hass.config_entries.async_entries(DOMAIN)
             if not entries:
-                return {"error": "Integracja EZVIZ RS20 Pro nie jest skonfigurowana"}
+                return {"error": "Integracja EZVIZ RE4 nie jest skonfigurowana"}
             runtime = getattr(entries[0], "runtime_data", None)
-            if not isinstance(runtime, EzvizRs20ProCoordinator):
-                return {"error": "Integracja EZVIZ RS20 Pro nie jest załadowana"}
-            if runtime.rs20_api is None:
+            if not isinstance(runtime, EzvizRe4Coordinator):
+                return {"error": "Integracja EZVIZ RE4 nie jest załadowana"}
+            if runtime.re4_api is None:
                 await runtime.async_request_refresh()
-            if runtime.rs20_api is None:
-                return {"error": "Klient RS20 Pro nie jest gotowy"}
+            if runtime.re4_api is None:
+                return {"error": "Klient RE4 nie jest gotowy"}
             map_id = 5
             device = runtime.data.get("device", {})
             try:
@@ -105,7 +103,7 @@ async def async_setup_entry(
             except (KeyError, IndexError, TypeError, ValueError):
                 pass
             result = await hass.async_add_executor_job(
-                runtime.rs20_api.query_map_path_candidates,
+                runtime.re4_api.query_map_path_candidates,
                 runtime.serial,
                 map_id,
             )
@@ -121,11 +119,11 @@ async def async_setup_entry(
                 {
                     "map_id": map_id,
                     "candidates": result,
-                    "client": runtime.rs20_api.client_diagnostics(),
-                    "clean_history": runtime.rs20_api.decode_diagnostic_blob(
+                    "client": runtime.re4_api.client_diagnostics(),
+                    "clean_history": runtime.re4_api.decode_diagnostic_blob(
                         operation.get("cleanHistory")
                     ),
-                    "abnormal_history": runtime.rs20_api.decode_diagnostic_blob(
+                    "abnormal_history": runtime.re4_api.decode_diagnostic_blob(
                         operation.get("abnormalHistory")
                     ),
                 }
@@ -138,55 +136,15 @@ async def async_setup_entry(
             supports_response=SupportsResponse.ONLY,
         )
 
-    if not hass.services.has_service(DOMAIN, SERVICE_CAMERA_DIAGNOSTICS):
-
-        async def async_camera_diagnostics(call: ServiceCall) -> dict[str, Any]:
-            """Verify encrypted cloud transport without returning media bytes."""
-            entries = hass.config_entries.async_entries(DOMAIN)
-            runtime = getattr(entries[0], "runtime_data", None) if entries else None
-            if not isinstance(runtime, EzvizRs20ProCoordinator):
-                return {"error": "Integracja EZVIZ RS20 Pro nie jest załadowana"}
-            try:
-                return _sanitize(await runtime.async_camera_trace())
-            except Exception as err:
-                return {"error": str(err)}
-
-        hass.services.async_register(
-            DOMAIN,
-            SERVICE_CAMERA_DIAGNOSTICS,
-            async_camera_diagnostics,
-            supports_response=SupportsResponse.ONLY,
-        )
-
-    if not hass.services.has_service(DOMAIN, SERVICE_REFRESH_CAMERA):
-
-        async def async_refresh_camera(call: ServiceCall) -> None:
-            """Capture a single robot-camera frame only when explicitly called."""
-            entries = hass.config_entries.async_entries(DOMAIN)
-            runtime = getattr(entries[0], "runtime_data", None) if entries else None
-            if not isinstance(runtime, EzvizRs20ProCoordinator):
-                raise RuntimeError("Integracja EZVIZ RS20 Pro nie jest załadowana")
-            ffmpeg = hass.data.get("ffmpeg")
-            ffmpeg_path = str(getattr(ffmpeg, "binary", "ffmpeg"))
-            await runtime.async_refresh_camera_snapshot(ffmpeg_path)
-
-        hass.services.async_register(
-            DOMAIN,
-            SERVICE_REFRESH_CAMERA,
-            async_refresh_camera,
-        )
-
     return True
 
 
 async def async_unload_entry(
-    hass: HomeAssistant, entry: EzvizRs20ProConfigEntry
+    hass: HomeAssistant, entry: EzvizRe4ConfigEntry
 ) -> bool:
-    """Unload EZVIZ RS20 Pro."""
+    """Unload EZVIZ RE4."""
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded and len(hass.config_entries.async_entries(DOMAIN)) <= 1:
         hass.services.async_remove(DOMAIN, SERVICE_INSPECT)
         hass.services.async_remove(DOMAIN, SERVICE_MAP_DIAGNOSTICS)
-        hass.services.async_remove(DOMAIN, SERVICE_CAMERA_DIAGNOSTICS)
-        hass.services.async_remove(DOMAIN, SERVICE_REFRESH_CAMERA)
     return unloaded

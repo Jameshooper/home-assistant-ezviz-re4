@@ -1,10 +1,6 @@
-EZVIZ RS20 Pro custom integration
+EZVIZ RE4 custom integration (fork of the EZVIZ RS20 Pro integration)
 Copyright 2026 Dmgerr
-
-The camera transport compatibility code in
-custom_components/ezviz_rs20pro/vtm_stream.py is derived from pyEzvizApi:
-https://github.com/RenierM26/pyEzvizApi
-Copyright its respective contributors, licensed under Apache-2.0.
 
 EZVIZ is a trademark of its respective owner. This project is unofficial and
 is not affiliated with, endorsed by, or supported by EZVIZ.
+Modifications Copyright 2026 James Hooper

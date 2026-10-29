@@ -1,0 +1,54 @@
+{
+  "title": "EZVIZ RE4",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar EZVIZ RE4",
+        "description": "Esta integración reutiliza la sesión activa de la integración oficial de EZVIZ. Deja vacío el número de serie para detectar automáticamente un RE4.",
+        "data": {
+          "source_entry_id": "Cuenta EZVIZ",
+          "serial": "Número de serie (opcional)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "EZVIZ RE4 ya está configurado.",
+      "ezviz_not_configured": "Configura primero la integración oficial de EZVIZ."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": {
+        "name": "Batería"
+      },
+      "total_clean_area": {
+        "name": "Superficie total limpiada"
+      },
+      "main_brush": {
+        "name": "Cepillo principal"
+      },
+      "side_brush": {
+        "name": "Cepillo lateral"
+      },
+      "hepa_filter": {
+        "name": "Filtro HEPA"
+      },
+      "mop": {
+        "name": "Mopas"
+      },
+      "sensors": {
+        "name": "Sensores"
+      }
+    }
+  },
+  "services": {
+    "inspect": {
+      "name": "Inspeccionar RE4",
+      "description": "Devuelve datos saneados del dispositivo para diagnosticar el protocolo."
+    },
+    "map_diagnostics": {
+      "name": "Inspeccionar mapa del RE4",
+      "description": "Prueba el acceso de solo lectura al mapa y la ruta sin controlar el robot."
+    }
+  }
+}

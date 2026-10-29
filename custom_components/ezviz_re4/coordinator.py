@@ -1,9 +1,8 @@
-"""Coordinator for EZVIZ RS20 Pro."""
+"""Coordinator for EZVIZ RE4."""
 
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime
 from functools import partial
 from typing import Any
 
@@ -15,8 +14,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .api import EzvizRs20ProApi
-from .cloud_camera import capture_cloud_snapshot, trace_cloud_stream
+from .api import EzvizRe4Api
 from .const import (
     CONF_SERIAL,
     CONF_SOURCE_ENTRY_ID,
@@ -44,20 +42,20 @@ def _find_api(runtime_data: Any) -> Any | None:
     return None
 
 
-def _contains_rs20(value: Any) -> bool:
-    """Return whether a nested response identifies an RS20-class device."""
+def _is_sweeping_robot(value: Any) -> bool:
+    """Return whether a nested response identifies a EZVIZ sweeping robot."""
     if isinstance(value, str):
         normalized = value.casefold().replace("-", "").replace(" ", "")
-        return "rs20" in normalized
+        return "sweepingrobot" in normalized
     if isinstance(value, Mapping):
-        return any(_contains_rs20(item) for item in value.values())
+        return any(_is_sweeping_robot(item) for item in value.values())
     if isinstance(value, (list, tuple)):
-        return any(_contains_rs20(item) for item in value)
+        return any(_is_sweeping_robot(item) for item in value)
     return False
 
 
-class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Fetch RS20 Pro data through the already authenticated EZVIZ client."""
+class EzvizRe4Coordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Fetch RE4 data through the already authenticated EZVIZ client."""
 
     def __init__(
         self,
@@ -74,9 +72,7 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entry = entry
         self.source_entry = source_entry
         self.serial: str = entry.data.get(CONF_SERIAL, "")
-        self.rs20_api: EzvizRs20ProApi | None = None
-        self.camera_snapshot: bytes | None = None
-        self.camera_snapshot_updated: datetime | None = None
+        self.re4_api: EzvizRe4Api | None = None
 
     def _api(self) -> Any:
         if self.source_entry.state is not ConfigEntryState.LOADED:
@@ -107,19 +103,19 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             matches = [
                 (str(serial), payload)
                 for serial, payload in raw.items()
-                if isinstance(payload, Mapping) and _contains_rs20(payload)
+                if isinstance(payload, Mapping) and _is_sweeping_robot(payload)
             ]
             if not matches:
-                raise UpdateFailed("Nie znaleziono EZVIZ RS20 Pro na koncie")
+                raise UpdateFailed("Nie znaleziono EZVIZ RE4 na koncie")
             selected_serial, selected = matches[0]
             self.serial = selected_serial
 
-        self.rs20_api = EzvizRs20ProApi(source_api)
+        self.re4_api = EzvizRe4Api(source_api)
         task: dict[str, Any] = {}
         task_error: str | None = None
         try:
             task = await self.hass.async_add_executor_job(
-                self.rs20_api.query_current_task,
+                self.re4_api.query_current_task,
                 selected_serial,
             )
         except Exception as err:
@@ -134,58 +130,26 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_clean_control(self, command: str) -> None:
         """Send a documented robot control and refresh state."""
-        if self.rs20_api is None:
-            raise UpdateFailed("Klient RS20 Pro nie jest gotowy")
+        if self.re4_api is None:
+            raise UpdateFailed("Klient RE4 nie jest gotowy")
         await self.hass.async_add_executor_job(
-            self.rs20_api.clean_control,
+            self.re4_api.clean_control,
             self.serial,
             command,
         )
         await self.async_request_refresh()
 
-    async def async_set_clean_mode(self, mode: str) -> None:
-        """Set cleaning mode and refresh state."""
-        if self.rs20_api is None:
-            raise UpdateFailed("Klient RS20 Pro nie jest gotowy")
-        await self.hass.async_add_executor_job(
-            self.rs20_api.set_clean_mode,
-            self.serial,
-            mode,
-        )
-        await self.async_request_refresh()
-
-    async def async_set_station_feature(
-        self,
-        *,
-        domain: str,
-        identifier: str,
-        value: dict[str, Any],
-    ) -> None:
-        """Update an allow-listed station setting and refresh device state."""
-        if self.rs20_api is None:
-            raise UpdateFailed("RS20 Pro client is not ready")
-        await self.hass.async_add_executor_job(
-            partial(
-                self.rs20_api.set_station_feature,
-                self.serial,
-                domain=domain,
-                identifier=identifier,
-                value=value,
-            )
-        )
-        await self.async_request_refresh()
-
     async def async_clean_segments(self, segment_ids: list[str]) -> None:
         """Start a native room-cleaning task for selected segment IDs."""
-        if self.rs20_api is None:
-            raise UpdateFailed("Klient RS20 Pro nie jest gotowy")
+        if self.re4_api is None:
+            raise UpdateFailed("Klient RE4 nie jest gotowy")
         device = self.data.get("device", {})
         try:
             map_mgr = device["FEATURE_INFO"]["0"]["SweepingRobot"]["SweeperMapMgr"]
             map_id = int(map_mgr["MapBasicProperty"][0]["mapID"])
             configs = map_mgr["RoomCustomCleanCfg"][0]["room"]
         except (KeyError, IndexError, TypeError, ValueError) as err:
-            raise UpdateFailed("Brak konfiguracji pomieszczeń RS20 Pro") from err
+            raise UpdateFailed("Brak konfiguracji pomieszczeń RE4") from err
 
         requested = {str(item) for item in segment_ids}
         rooms = [dict(item) for item in configs if str(item.get("roomID")) in requested]
@@ -193,13 +157,13 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         missing = requested - found
         if missing:
             raise UpdateFailed(
-                f"Nieznane pomieszczenia RS20 Pro: {', '.join(sorted(missing))}"
+                f"Nieznane pomieszczenia RE4: {', '.join(sorted(missing))}"
             )
         for order, room in enumerate(rooms, start=1):
             room["order"] = order
         await self.hass.async_add_executor_job(
             partial(
-                self.rs20_api.start_region_clean,
+                self.re4_api.start_region_clean,
                 self.serial,
                 map_id=map_id,
                 rooms=rooms,
@@ -207,28 +171,6 @@ class EzvizRs20ProCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         await self.async_request_refresh()
 
-    async def async_camera_trace(self) -> dict[str, Any]:
-        """Open a short, body-free camera transport diagnostic."""
-        return await self.hass.async_add_executor_job(
-            trace_cloud_stream,
-            self._api(),
-            self.serial,
-        )
-
-    async def async_refresh_camera_snapshot(self, ffmpeg_path: str) -> None:
-        """Capture one image on demand and immediately close the video stream."""
-        from homeassistant.util import dt as dt_util
-
-        self.camera_snapshot = await self.hass.async_add_executor_job(
-            partial(
-                capture_cloud_snapshot,
-                self._api(),
-                self.serial,
-                ffmpeg_path,
-            )
-        )
-        self.camera_snapshot_updated = dt_util.utcnow()
-        self.async_update_listeners()
 
 
 def get_source_entry(hass: HomeAssistant, entry: ConfigEntry) -> ConfigEntry:

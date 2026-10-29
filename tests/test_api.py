@@ -1,4 +1,4 @@
-"""Unit tests for the RS20 Pro request adapter."""
+"""Unit tests for the RE4 request adapter."""
 
 from __future__ import annotations
 
@@ -13,14 +13,14 @@ import unittest
 API_PATH = (
     Path(__file__).parents[1]
     / "custom_components"
-    / "ezviz_rs20pro"
+    / "ezviz_re4"
     / "api.py"
 )
-SPEC = importlib.util.spec_from_file_location("ezviz_rs20pro_api", API_PATH)
+SPEC = importlib.util.spec_from_file_location("ezviz_re4_api", API_PATH)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
-EzvizRs20ProApi = MODULE.EzvizRs20ProApi
+EzvizRe4Api = MODULE.EzvizRe4Api
 
 
 class FakeResponse:
@@ -68,7 +68,7 @@ class ApiTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.client = FakeClient()
-        self.api = EzvizRs20ProApi(self.client)
+        self.api = EzvizRe4Api(self.client)
 
     def test_query_current_task(self) -> None:
         self.api.query_current_task("ab1234567")
@@ -89,29 +89,6 @@ class ApiTests(unittest.TestCase):
     def test_unknown_command_is_rejected_locally(self) -> None:
         with self.assertRaises(ValueError):
             self.api.clean_control("AB1234567", "factory_reset")
-        self.assertEqual(self.client._session.calls, [])
-
-    def test_station_feature_uses_feature_endpoint(self) -> None:
-        self.api.set_station_feature(
-            "ab1234567",
-            domain="SweeperBaseStationMgr",
-            identifier="ChildLockSwitch",
-            value={"enabled": True},
-        )
-        call = self.client._session.calls[0]
-        self.assertTrue(call["url"].endswith(
-            "/AB1234567/SweepingRobot/0/SweeperBaseStationMgr/ChildLockSwitch"
-        ))
-        self.assertEqual(json.loads(call["data"]), {"enabled": True})
-
-    def test_unknown_station_feature_is_rejected_locally(self) -> None:
-        with self.assertRaises(ValueError):
-            self.api.set_station_feature(
-                "ab1234567",
-                domain="SweeperBaseStationMgr",
-                identifier="FactoryReset",
-                value={"enabled": True},
-            )
         self.assertEqual(self.client._session.calls, [])
 
     def test_map_path_candidates_are_read_only_posts(self) -> None:

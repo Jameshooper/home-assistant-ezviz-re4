@@ -1,4 +1,4 @@
-"""Config flow for EZVIZ RS20 Pro."""
+"""Config flow for EZVIZ RE4."""
 
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ from homeassistant.helpers import selector
 from .const import CONF_SERIAL, CONF_SOURCE_ENTRY_ID, DOMAIN, SOURCE_DOMAIN
 
 
-class EzvizRs20ProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Configure EZVIZ RS20 Pro by reusing the official EZVIZ session."""
+class EzvizRe4ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Configure EZVIZ RE4 by reusing the official EZVIZ session."""
 
     VERSION = 1
 
@@ -40,7 +40,7 @@ class EzvizRs20ProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_abort(reason="ezviz_not_configured")
 
             return self.async_create_entry(
-                title="EZVIZ RS20 Pro",
+                title="EZVIZ RE4",
                 data={
                     CONF_SOURCE_ENTRY_ID: source_entry_id,
                     CONF_SERIAL: serial,

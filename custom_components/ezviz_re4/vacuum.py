@@ -1,4 +1,4 @@
-"""Vacuum platform for EZVIZ RS20 Pro."""
+"""Vacuum platform for EZVIZ RE4."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import EzvizRs20ProCoordinator
+from .coordinator import EzvizRe4Coordinator
 
 _ERROR_TRANSLATIONS = {
     "CR_CleanWaterBoxLow": "Mało wody w zbiorniku czystej wody",
@@ -51,15 +51,15 @@ def _find_value(value: Any, keys: tuple[str, ...]) -> Any | None:
 
 async def async_setup_entry(
     hass: Any,
-    entry: ConfigEntry[EzvizRs20ProCoordinator],
+    entry: ConfigEntry[EzvizRe4Coordinator],
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the RS20 Pro vacuum entity."""
-    async_add_entities([EzvizRs20ProVacuum(entry.runtime_data)])
+    """Set up the RE4 vacuum entity."""
+    async_add_entities([EzvizRe4Vacuum(entry.runtime_data)])
 
 
-class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuumEntity):
-    """EZVIZ RS20 Pro vacuum entity."""
+class EzvizRe4Vacuum(CoordinatorEntity[EzvizRe4Coordinator], StateVacuumEntity):
+    """EZVIZ RE4 vacuum entity."""
 
     _attr_has_entity_name = True
     _attr_name = None
@@ -72,15 +72,15 @@ class EzvizRs20ProVacuum(CoordinatorEntity[EzvizRs20ProCoordinator], StateVacuum
         | VacuumEntityFeature.CLEAN_AREA
     )
 
-    def __init__(self, coordinator: EzvizRs20ProCoordinator) -> None:
+    def __init__(self, coordinator: EzvizRe4Coordinator) -> None:
         super().__init__(coordinator)
         serial = coordinator.data["serial"]
         self._attr_unique_id = f"{serial}_vacuum"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial)},
             manufacturer="EZVIZ",
-            model="RS20 Pro",
-            name="EZVIZ RS20 Pro",
+            model="RE4",
+            name="EZVIZ RE4",
             sw_version=str(
                 _find_value(coordinator.data["device"], ("version",)) or ""
             ),

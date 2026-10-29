@@ -1,0 +1,54 @@
+{
+  "title": "EZVIZ RE4",
+  "config": {
+    "step": {
+      "user": {
+        "title": "EZVIZ RE4 verbinden",
+        "description": "Diese Integration verwendet die aktive Sitzung der offiziellen EZVIZ-Integration. Lassen Sie die Seriennummer leer, um einen RE4 automatisch zu erkennen.",
+        "data": {
+          "source_entry_id": "EZVIZ-Konto",
+          "serial": "Seriennummer (optional)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "EZVIZ RE4 ist bereits konfiguriert.",
+      "ezviz_not_configured": "Richten Sie zuerst die offizielle EZVIZ-Integration ein."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": {
+        "name": "Batterie"
+      },
+      "total_clean_area": {
+        "name": "Gesamte gereinigte Fläche"
+      },
+      "main_brush": {
+        "name": "Hauptbürste"
+      },
+      "side_brush": {
+        "name": "Seitenbürste"
+      },
+      "hepa_filter": {
+        "name": "HEPA-Filter"
+      },
+      "mop": {
+        "name": "Wischmopps"
+      },
+      "sensors": {
+        "name": "Sensoren"
+      }
+    }
+  },
+  "services": {
+    "inspect": {
+      "name": "RE4 prüfen",
+      "description": "Gibt bereinigte Gerätedaten zur Protokolldiagnose zurück."
+    },
+    "map_diagnostics": {
+      "name": "RE4-Karte prüfen",
+      "description": "Testet den schreibgeschützten Karten- und Routenzugriff ohne Robotersteuerung."
+    }
+  }
+}
